@@ -7,6 +7,7 @@ clear
 echo "This script will assist with compiling Super Mario 64 on Raspbian 10"
 echo "Note that accelerated OpenGL (vc4_drm) is required for maximum performance"
 echo "Checking Raspberry Pi model..."
+origdir=$PWD
 lowmem=0
 pi=0
 pimodel=$(uname -m 2>/dev/null || echo unknown)
@@ -22,7 +23,7 @@ then
    exp=1;
 fi
 
-if [[ $pimodel =~ "armv7" ]]
+if [[ $pimodel =~ "armv7" && $pitype =~ "Pi 2" || $pitype =~ "Pi 3" ]]
 then
    echo
    echo "Raspberry Pi Model 2/3 detected (32bit)"
@@ -30,12 +31,12 @@ then
    lowmem=0;
 fi
 
-if [[ $pimodel =~ "aarch64" && $pitype =~ "4" ]]
+if [[ $pitype =~ "Model 4" ]]
 then
    echo
    echo "Raspberry Pi Model 4 detected"
-   echo "Audio errors reported"
-   echo "Fixing audio config, reboot after compilation completes to activate"
+   echo "Audio errors reported for Pulseaudio"
+   echo "Fixing audio config. If no errors are reported, reboot after compilation completes to activate."
    sudo sed -i 's/load-module module-udev-detect/load-module module-udev-detect tsched=0/' /etc/pulse/default.pa
 	#load-module module-udev-detect tsched=0
    pi=4;
@@ -55,6 +56,7 @@ then
 	then
         echo ""
         else
+	echo "Y not entered. Exiting."
  	exit
 	fi
 
@@ -70,9 +72,9 @@ echo "Super Mario 64 RPi Initial Setup"
 
 if [[ $pi != 4 ]]
 then #Dumb idea, but quick hack. 
-     #We CANNOT enable VC4 for Pi4 as it uses VC6
+     #We CANNOT enable VC4 for Pi4 as it uses VC6 or vc4-fakekms. 
 
-inxinf=$(inxi -Gx)
+inxinf=$(inxi -Gx 2>&1)
 echo "Checking for pre-enabled VC4 acceleration (inxi -Gx)"
 
 if [[ $inxinf =~ "not found" ]]
@@ -80,7 +82,10 @@ then
 echo "Error: inxi not installed. Installing..."
 sudo apt-get update
 sudo apt-get install inxi
-inxi=$(inxi -Gx)
+sync
+sleep 1
+inxi=$(inxi -Gx 2>&1)
+sleep 1
 
 	if [[ $inxinf =~ "not found" ]]
 	then
@@ -198,7 +203,7 @@ then
 echo ""
 echo "Installing dependencies for SDL2 compilation"
 
-sudo sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"
+sudo sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list
 sudo apt build-dep libsdl2
 sudo apt install libdrm-dev libgbm-dev
 sync
@@ -216,15 +221,17 @@ sleep 2
 echo "Downloading SDL2 from libsdl.org and unzipping to HOME/src/sdl2/SDL2"
 wget https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
 sync
-tar xzf ./SDL2*.gz
+tar xzf $PWD/SDL2*.gz
 sync
-cd ./SDL2*
+cd SDL2*/
 
 echo "Configuring SDL2 library to enable KMSDRM (Xorg free rendering)"
-./configure --enable-video-kmsdrm
+bash ./configure --enable-video-kmsdrm
 echo "Compiling modified SDL2 and installing."
 make
 sudo make install
+synct
+cd $origdir
 fi
 
 #----------------------------------------------------------------------
@@ -367,7 +374,7 @@ sync
 
 if [[ $curdir == 1 ]]
 then
-sm64done=$(find ./build/*/* | grep .arm)
+sm64done=$(find $PWD/build/*/* | grep .arm)
 else
 sm64done=$(find $HOME/src/sm64pi/sm64pc/build/*/* | grep .arm)
 fi
@@ -380,7 +387,7 @@ echo "You may find it in"
 
 if [[ $curdir == 1 ]]
 then
-$sm64loc=$(ls ./build/*pc/*.arm)
+$sm64loc=$(ls $PWD/build/*pc/*.arm)
 else
 $sm64loc=$(ls $HOME/src/sm64pi/sm64pc/build/*pc/*.arm)
 fi
