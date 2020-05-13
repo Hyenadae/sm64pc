@@ -230,7 +230,7 @@ bash ./configure --enable-video-kmsdrm
 echo "Compiling modified SDL2 and installing."
 make
 sudo make install
-synct
+sync
 cd $origdir
 fi
 
