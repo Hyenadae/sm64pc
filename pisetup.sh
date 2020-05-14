@@ -25,25 +25,33 @@ fi
 
 if [[ $pimodel =~ "armv7" && $pitype =~ "Pi 2" || $pitype =~ "Pi 3" ]]
 then
-   echo
+   echo ""
    echo "Raspberry Pi Model 2/3 detected (32bit)"
    pi=2;
    lowmem=0;
 fi
 
+if [[ $pimodel =~ "aarch64" ]]
+then
+pi=4;
+exp=1;
+lowmem=0;
+echo ""
+echo "64bit Raspbian / Pi detected. Pi model defaulted to Pi 4"
+fi
+
 if [[ $pitype =~ "Model 4" ]]
 then
-   echo
+   echo ""
    echo "Raspberry Pi Model 4 detected"
-   echo "Audio errors reported for Pulseaudio"
-   echo "Fixing audio config. If no errors are reported, reboot after compilation completes to activate."
-   sudo sed -i 's/load-module module-udev-detect/load-module module-udev-detect tsched=0/' /etc/pulse/default.pa
-	#load-module module-udev-detect tsched=0
+   echo "Audio errors reported for Pulseaudio. Fix by adding tsched=0 to module-udev-detect in /etc/pulse/default.pa"
+   #echo "Fixing audio config. If no errors are reported, reboot after compilation completes to activate."
+   #sudo sed -i 's/load-module module-udev-detect/load-module module-udev-detect tsched=0/' /etc/pulse/default.pa
+   #load-module module-udev-detect tsched=0
    pi=4;
    lowmem=0;
    exp=1;
 fi
-
 
 if [[ $exp == 1 ]]
 then
@@ -69,10 +77,7 @@ fi
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
 clear
 echo "Super Mario 64 RPi Initial Setup"
-
-if [[ $pi != 4 ]]
-then #Dumb idea, but quick hack. 
-     #We CANNOT enable VC4 for Pi4 as it uses VC6 or vc4-fakekms. 
+# On Pi Pi4 only enable FKMS.  
 
 inxinf=$(inxi -Gx 2>&1)
 echo "Checking for pre-enabled VC4 acceleration (inxi -Gx)"
@@ -105,15 +110,27 @@ sleep 4
 	else
 	echo ""
 	echo "OpenGL driver not found. opening Raspi-Config..."
-	echo "Please enable raspi-config -> ADV Opt -> OpenGL -> Enable FullKMS Renderer"
+	if [[ $pi == 4 ]]
+	then
+	echo "Please enable raspi-config -> ADV Opt -> OpenGL -> Enable FAKE KMS Renderer"
+	else
+	echo "Please enable raspi-config -> ADV Opt -> OpenGL -> Enable Full KMS Renderer"
+	fi
 	echo ""
 	sleep 5
 	sudo raspi-config
+	sync
+	if [[ $pi == 4 ]]
+	then
+        vc4add=$(cat /boot/config.txt | grep -e "dtoverlay=vc4-fkms-v3d")
+	else
 	vc4add=$(cat /boot/config.txt | grep -e "dtoverlay=vc4-kms-v3d")
-
+        fi
 		if [[ $vc4add =~ "vc4" ]]
 		then
 		echo "OGL driver now enabled on reboot"
+		else
+		echo "OGL driver not detected / enabled in /boot/config.txt"
 		fi
 fi
 
@@ -204,6 +221,8 @@ echo ""
 echo "Installing dependencies for SDL2 compilation"
 
 sudo sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list
+sync
+sudo apt-get update
 sudo apt build-dep libsdl2
 sudo apt install libdrm-dev libgbm-dev
 sync
@@ -216,7 +235,7 @@ mkdir $HOME/src
 cd $HOME/src
 mkdir $HOME/src/sdl2
 cd $HOME/src/sdl2
-sleep 2
+sleep 1
 
 echo "Downloading SDL2 from libsdl.org and unzipping to HOME/src/sdl2/SDL2"
 wget https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
