@@ -1,6 +1,6 @@
 #!/bin/bash
 # Super Mario 64 PC on Raspberry Pi
-# Find latest updates and code on https://www.github.com/sm64pc/sm64pc 
+# Find latest updates and code on https://www.github.com/sm64pc/sm64pc
 # ToDo: Test on more Pi models with fresh Raspbian and allow existing src folders to be updated.
 #
 clear
@@ -77,7 +77,7 @@ fi
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////
 clear
 echo "Super Mario 64 RPi Initial Setup"
-# On Pi Pi4 only enable FKMS.  
+# On Pi Pi4 only enable FKMS.
 
 inxinf=$(inxi -Gx 2>&1)
 echo "Checking for pre-enabled VC4 acceleration (inxi -Gx)"
@@ -220,9 +220,10 @@ then
 echo ""
 echo "Installing dependencies for SDL2 compilation"
 
-sudo sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list
+sudo sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list"
 sync
 sudo apt-get update
+sync
 sudo apt build-dep libsdl2
 sudo apt install libdrm-dev libgbm-dev
 sync
