@@ -180,7 +180,7 @@ read -p "Reboot to enable changes? (Y/N): " fixstart
 	sleep 4
 	sudo reboot
 	fi
-	fi
+	
 fi # "Should never run on a Pi 4" part ends here
 
 #--------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ echo ""
 echo "Step 3. Compiling Super Mario 64 for the Raspberry Pi"
 echo ""
 echo "Warning: Super Mario 64 assets are required in order to compile"
-if [[ $curdir ==1 ]]
+if [[ $curdir == 1 ]]
 then
 echo "Assets will be extracted from "$PWD" "
 else
