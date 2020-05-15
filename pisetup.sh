@@ -224,8 +224,8 @@ sudo sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list"
 sync
 sudo apt-get update
 sync
-sudo apt build-dep libsdl2
-sudo apt install libdrm-dev libgbm-dev
+sudo apt-get build-dep libsdl2
+sudo apt-get install libdrm-dev libgbm-dev
 sync
 
 echo ""
