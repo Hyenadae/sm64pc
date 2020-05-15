@@ -94,8 +94,8 @@ sleep 1
 
 	if [[ $inxinf =~ "not found" ]]
 	then
-	echo "Warning: Setup will not continue unless inxi is installed"
-	echo "Please ensure your Pi is in a state to download and install packages"
+	echo ""
+	echo "Please reload the script to detect installed inxi"
 	sleep 3
 	exit
 	fi
