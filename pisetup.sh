@@ -239,11 +239,11 @@ cd $HOME/src/sdl2
 sleep 1
 
 echo "Downloading SDL2 from libsdl.org and unzipping to HOME/src/sdl2/SDL2"
-wget https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
+wget https://www.libsdl.org/release/SDL2-2.0.12.tar.gz -o sdl2.tar.gz
 sync
-tar xzf SDL2*.gz
+tar xzf ./sdl2.tar.gz
 sync
-cd SDL2*/
+cd sdl2*/
 
 echo "Configuring SDL2 library to enable KMSDRM (Xorg free rendering)"
 bash ./configure --enable-video-kmsdrm
