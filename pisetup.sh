@@ -246,7 +246,7 @@ sync
 cd SDL2*/
 
 echo "Configuring SDL2 library to enable KMSDRM (Xorg free rendering)"
-bash ./configure --enable-video-kmsdrm
+./configure --enable-video-kmsdrm
 echo "Compiling modified SDL2 and installing."
 make
 sudo make install
