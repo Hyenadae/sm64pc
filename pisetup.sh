@@ -220,7 +220,7 @@ then
 echo ""
 echo "Installing dependencies for SDL2 compilation"
 
-sudo sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list"
+sudo sed -i -- 's/#deb-src/deb-src/g' /etc/apt/sources.list && sudo sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list
 sync
 sudo apt-get update
 sync
@@ -239,11 +239,11 @@ cd $HOME/src/sdl2
 sleep 1
 
 echo "Downloading SDL2 from libsdl.org and unzipping to HOME/src/sdl2/SDL2"
-wget https://www.libsdl.org/release/SDL2-2.0.12.tar.gz -o sdl2.tar.gz
+wget https://www.libsdl.org/release/SDL2-2.0.12.tar.gz -O sdl2.tar.gz
 sync
 tar xzf ./sdl2.tar.gz
 sync
-cd sdl2*/
+cd SDL2*/
 
 echo "Configuring SDL2 library to enable KMSDRM (Xorg free rendering)"
 bash ./configure --enable-video-kmsdrm
