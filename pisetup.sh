@@ -266,13 +266,25 @@ echo ""
 sm64dircur=$(ls ./Makefile)
 sm64dir=$(ls $HOME/src/sm64pi/sm64pc/Makefile)
 
+if [[ $sm64dircur =~ "access" ]]
+then
+echo ""
+sm64dircur=0;
+else
 if [[ $sm64dircur =~ "Makefile" ]] #If current directory has a makefile
 then
 sm64dir=$sm64dircur
 curdir=1; #If current directory has a Makefile or is git zip
 fi
+fi
 
-if [[ $sm64dir =~ "Makefile" ]];
+if [[ $sm64dir =~ "access" ]]
+then
+echo ""
+sm64dir=0;
+curdir=0;
+else
+if [[ $sm64dir =~ "Makefile" ]]
 then
     echo "Existing Super Mario 64 PC port files found!"
     echo "Redownload files (fresh compile)?"
@@ -281,17 +293,18 @@ then
     if [[ $sm64git =~ "N" ]] # Do NOT redownload, USE current directory for compile
     then
     sm64dir=1; # Don't redownload files , use current directory (has sm64 files)
-    curdir=1 
+    curdir=1;
     fi
 
 else #Do a fresh compile in HOME/src/sm64pi/sm64pc/
     sm64dir=0;
     curdir=0;
 fi
+fi
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-
+echo ""
 if [[ $sm64git =~ "Y" || $sm64dir == 0 || $curdir == 0 ]]  #If user wants to redownload or NOT git-zip execution
 then
 echo "Step 2. Super Mario 64 PC-Port will now be downloaded from github"
@@ -335,7 +348,7 @@ fi
 
 if [[ $curdir == 1 ]]
 then
-sm64z64=$(find ./* | grep baserom) #See if current directory is prepped
+sm64z64=$(find ./* -maxdepth 1 | grep baserom) #See if current directory is prepped
 else
 sm64z64=$(find $HOME/src/sm64pi/sm64pc/* | grep baserom) #see if fresh compile directory is prepped
 fi
