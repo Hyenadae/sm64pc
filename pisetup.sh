@@ -44,7 +44,7 @@ if [[ $pitype =~ "Model 4" ]]
 then
    echo ""
    echo "Raspberry Pi Model 4 detected"
-   echo "Audio errors reported for Pulseaudio. Fix by adding tsched=0 to module-udev-detect in /etc/pulse/default.pa"
+   echo "Audio errors reported for Pulseaudio users. Fix by adding tsched=0 to module-udev-detect in /etc/pulse/default.pa"
    #echo "Fixing audio config. If no errors are reported, reboot after compilation completes to activate."
    #sudo sed -i 's/load-module module-udev-detect/load-module module-udev-detect tsched=0/' /etc/pulse/default.pa
    #load-module module-udev-detect tsched=0
@@ -89,7 +89,7 @@ sudo apt-get update
 sudo apt-get install inxi
 sync
 sleep 1
-inxi=$(inxi -Gx 2>&1)
+inxi=$(bash inxi -Gx 2>&1)
 sleep 1
 
 	if [[ $inxinf =~ "not found" ]]
@@ -239,9 +239,9 @@ cd $HOME/src/sdl2
 sleep 1
 
 echo "Downloading SDL2 from libsdl.org and unzipping to HOME/src/sdl2/SDL2"
-wget https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
+wget https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
 sync
-tar xzf $PWD/SDL2*.gz
+tar xzf SDL2*.gz
 sync
 cd SDL2*/
 
