@@ -9,7 +9,7 @@ echo "Note that accelerated OpenGL (vc4_drm) is required for maximum performance
 echo "Checking Raspberry Pi model..."
 origdir=$PWD
 lowmem=0
-pi=0
+pi=1
 pimodel=$(uname -m 2>/dev/null || echo unknown)
 pitype=$(tr -d '\0' < /sys/firmware/devicetree/base/model)
 
@@ -248,7 +248,7 @@ cd SDL2*/
 echo "Configuring SDL2 library to enable KMSDRM (Xorg free rendering)"
 ./configure --enable-video-kmsdrm
 echo "Compiling modified SDL2 and installing."
-make
+make -j$pi
 sudo make install
 sync
 cd $origdir
@@ -398,7 +398,7 @@ echo "At least 300MB of free storage AND RAM is recommended"
 echo ""
 make clean
 sync
-make TARGET_RPI=1
+make -j$pi TARGET_RPI=1
 sync
 
 
